@@ -11,6 +11,8 @@
 		value: string;
 		coords?: Coords | null;
 		placeName?: string | null;
+		datetime?: string;
+		timeLabel?: string;
 		placeholder?: string;
 	}
 
@@ -19,6 +21,8 @@
 		value = $bindable(),
 		coords = $bindable(null),
 		placeName = $bindable(null),
+		datetime = $bindable(''),
+		timeLabel = 'Time',
 		placeholder = 'Enter a location...'
 	}: Props = $props();
 
@@ -70,6 +74,8 @@
 			{#if placeName}&nbsp;·&nbsp;{placeName}{/if}
 		</p>
 	{/if}
+	<label class="label font-medium">{timeLabel}</label>
+	<input class="input" type="datetime-local" bind:value={datetime} />
 </div>
 
 <!--
@@ -81,7 +87,8 @@
 	utility class, so it overrides input-group's outline-color: transparent.
 -->
 <style>
-	.input-group {
+	.input-group,
+	.input {
 		outline: 1px solid var(--color-surface-200-800);
 	}
 </style>
