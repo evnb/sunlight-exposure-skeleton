@@ -10,26 +10,45 @@
 		label: string;
 		value: string;
 		coords?: Coords | null;
+		placeName?: string | null;
 		placeholder?: string;
 	}
 
-	let { label, value = $bindable(), coords = $bindable(null), placeholder = 'Enter a location...' }: Props = $props();
+	let {
+		label,
+		value = $bindable(),
+		coords = $bindable(null),
+		placeName = $bindable(null),
+		placeholder = 'Enter a location...'
+	}: Props = $props();
 
 	async function geocode() {
 		if (!value.trim()) return;
 		const res = await fetch(
-			`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=1`
+			`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=1&addressdetails=1`
 		);
 		const data = await res.json();
 		if (data.length > 0) {
-			coords = { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+			const r = data[0];
+			coords = { lat: parseFloat(r.lat), lng: parseFloat(r.lon) };
+			placeName =
+				r.address.city ?? r.address.town ?? r.address.village ?? r.address.county ?? null;
 		}
 	}
 
-	function useCurrentLocation() {
-		navigator.geolocation.getCurrentPosition((pos) => {
-			coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-			value = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+	async function useCurrentLocation() {
+		navigator.geolocation.getCurrentPosition(async (pos) => {
+			const lat = pos.coords.latitude;
+			const lng = pos.coords.longitude;
+			coords = { lat, lng };
+			value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+			const res = await fetch(
+				`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+			);
+			const data = await res.json();
+			placeName =
+				data.address?.city ?? data.address?.town ?? data.address?.village ?? data.address?.county ?? null;
 		});
 	}
 </script>
@@ -45,6 +64,12 @@
 			<LocateFixed size={16} />
 		</button>
 	</div>
+	{#if coords}
+		<p class="text-sm text-surface-400">
+			{coords.lat.toFixed(5)}°, {coords.lng.toFixed(5)}°
+			{#if placeName}&nbsp;·&nbsp;{placeName}{/if}
+		</p>
+	{/if}
 </div>
 
 <!--
