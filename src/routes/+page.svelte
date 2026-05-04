@@ -29,5 +29,5 @@
 		<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} bind:placeName={destinationPlace} bind:datetime={destinationDatetime} timeLabel="Arrival Time" placeholder="Enter destination city / zip / address" />
 	</div>
 
-	<RouteMap origin={originCoords} destination={destinationCoords} />
+	<RouteMap origin={originCoords} destination={destinationCoords} originDatetime={originDatetime} destinationDatetime={destinationDatetime} />
 </div>

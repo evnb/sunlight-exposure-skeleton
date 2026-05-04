@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import SunCalc from 'suncalc';
 
 	interface Coords {
 		lat: number;
@@ -9,9 +10,11 @@
 	interface Props {
 		origin: Coords | null;
 		destination: Coords | null;
+		originDatetime?: string;
+		destinationDatetime?: string;
 	}
 
-	let { origin, destination }: Props = $props();
+	let { origin, destination, originDatetime, destinationDatetime }: Props = $props();
 
 	let mapContainer: HTMLDivElement;
 	let maplibregl: typeof import('maplibre-gl').default;
@@ -71,6 +74,36 @@
 		return { type: 'FeatureCollection', features: [] };
 	}
 
+	const COMPASS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+
+	const azimuth = $derived.by(() => {
+		if (!origin || !destination) return null;
+		const toRad = (d: number) => (d * Math.PI) / 180;
+		const lat1 = toRad(origin.lat);
+		const lat2 = toRad(destination.lat);
+		const dLng = toRad(destination.lng - origin.lng);
+		const y = Math.sin(dLng) * Math.cos(lat2);
+		const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+		return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+	});
+
+	const compassLabel = $derived(
+		azimuth !== null ? COMPASS[Math.round(azimuth / 45) % 8] : null
+	);
+
+	function sunPosition(coords: Coords, datetime: string | undefined) {
+		if (!coords || !datetime) return null;
+		const date = new Date(datetime);
+		if (isNaN(date.getTime())) return null;
+		const pos = SunCalc.getPosition(date, coords.lat, coords.lng);
+		const az = ((pos.azimuth * 180) / Math.PI + 180 + 360) % 360;
+		const alt = (pos.altitude * 180) / Math.PI;
+		return { az, alt, compass: COMPASS[Math.round(az / 45) % 8] };
+	}
+
+	const originSun = $derived(origin ? sunPosition(origin, originDatetime) : null);
+	const destinationSun = $derived(destination ? sunPosition(destination, destinationDatetime) : null);
+
 	$effect(() => {
 		if (!mapLoaded) return;
 
@@ -107,3 +140,18 @@
 </script>
 
 <div bind:this={mapContainer} class="h-64 w-full overflow-hidden rounded-container-token"></div>
+{#if azimuth !== null}
+	<p class="text-sm text-surface-400">
+		Route azimuth: {azimuth.toFixed(1)}° {compassLabel}
+	</p>
+{/if}
+{#if originSun}
+	<p class="text-sm text-surface-400">
+		Sun at departure — azimuth: {originSun.az.toFixed(1)}° {originSun.compass}, altitude: {originSun.alt.toFixed(1)}°
+	</p>
+{/if}
+{#if destinationSun}
+	<p class="text-sm text-surface-400">
+		Sun at arrival — azimuth: {destinationSun.az.toFixed(1)}° {destinationSun.compass}, altitude: {destinationSun.alt.toFixed(1)}°
+	</p>
+{/if}
