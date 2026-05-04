@@ -2,7 +2,9 @@
 	import LocationInput from '$lib/components/LocationInput.svelte';
 
 	let origin = $state('');
+	let originCoords = $state<{ lat: number; lng: number } | null>(null);
 	let destination = $state('');
+	let destinationCoords = $state<{ lat: number; lng: number } | null>(null);
 </script>
 
 <div class="flex flex-col gap-6">
@@ -12,7 +14,7 @@
 	</div>
 
 	<div class="flex flex-col gap-4">
-		<LocationInput label="Origin" bind:value={origin} placeholder="Enter origin city / zip / address" />
-		<LocationInput label="Destination" bind:value={destination} placeholder="Enter destination city / zip / address" />
+		<LocationInput label="Origin" bind:value={origin} bind:coords={originCoords} placeholder="Enter origin city / zip / address" />
+		<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} placeholder="Enter destination city / zip / address" />
 	</div>
 </div>
