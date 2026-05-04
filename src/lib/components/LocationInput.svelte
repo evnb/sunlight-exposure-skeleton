@@ -25,3 +25,17 @@
 		</button>
 	</div>
 </div>
+
+<!--
+	Skeleton's input-group draws its border via box-shadow using Tailwind v4's internal --tw-ring-shadow variable. Tailwind
+	v4 only emits the reset for that variable when a ring-* utility is actually used somewhere in your project — since none are, the variable 
+	is undefined and the entire box-shadow declaration is silently invalid.
+
+	The fix: add a scoped style in the component that sets outline directly. Svelte's scoped selector (.input-group[svelte-xxxx]) wins over the
+	utility class, so it overrides input-group's outline-color: transparent.
+-->
+<style>
+	.input-group {
+		outline: 1px solid var(--color-surface-200-800);
+	}
+</style>
