@@ -1,5 +1,6 @@
 <script lang="ts">
 	import LocationInput from '$lib/components/LocationInput.svelte';
+	import RouteMap from '$lib/components/RouteMap.svelte';
 
 	let origin = $state('');
 	let originCoords = $state<{ lat: number; lng: number } | null>(null);
@@ -19,4 +20,6 @@
 		<LocationInput label="Origin" bind:value={origin} bind:coords={originCoords} bind:placeName={originPlace} placeholder="Enter origin city / zip / address" />
 		<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} bind:placeName={destinationPlace} placeholder="Enter destination city / zip / address" />
 	</div>
+
+	<RouteMap origin={originCoords} destination={destinationCoords} />
 </div>
