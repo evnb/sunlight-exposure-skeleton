@@ -12,7 +12,7 @@
 	</div>
 
 	<div class="flex flex-col gap-4">
-		<LocationInput label="Origin" bind:value={origin} placeholder="Enter origin..." />
-		<LocationInput label="Destination" bind:value={destination} placeholder="Enter destination..." />
+		<LocationInput label="Origin" bind:value={origin} placeholder="Enter origin city / zip / address" />
+		<LocationInput label="Destination" bind:value={destination} placeholder="Enter destination city / zip / address" />
 	</div>
 </div>
