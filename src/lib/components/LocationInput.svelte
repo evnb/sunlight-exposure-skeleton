@@ -60,7 +60,7 @@
 <div class="flex flex-col gap-1">
 	<label class="label font-medium">{label}</label>
 	<div class="input-group grid-cols-[1fr_auto_auto]">
-		<input class="ig-input" type="text" bind:value {placeholder} />
+		<input class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} />
 		<button class="ig-btn preset-tonal" title="Geocode location" onclick={geocode}>
 			<MapPin size={16} />
 		</button>

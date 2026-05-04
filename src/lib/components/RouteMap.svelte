@@ -27,7 +27,8 @@
 			container: mapContainer,
 			style: 'https://tiles.openfreemap.org/styles/liberty',
 			center: [0, 20],
-			zoom: 1
+			zoom: 1,
+			interactive: false
 		});
 
 		map.on('load', () => {
