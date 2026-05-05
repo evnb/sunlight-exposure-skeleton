@@ -137,6 +137,33 @@
 	const originSun = $derived(origin ? sunPosition(origin, originDatetime) : null);
 	const destinationSun = $derived(destination ? sunPosition(destination, destinationDatetime) : null);
 
+	const intermediateSuns = $derived.by(() => {
+		if (!origin || !destination || !originDatetime || !destinationDatetime) return [];
+		const start = new Date(originDatetime);
+		const end = new Date(destinationDatetime);
+		if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return [];
+
+		const STEP_MS = 30 * 60 * 1000;
+		const totalMs = end.getTime() - start.getTime();
+		const results: Array<{ timeStr: string; lat: number; lng: number; az: number; alt: number; compass: string }> = [];
+
+		for (let t = start.getTime() + STEP_MS; t < end.getTime(); t += STEP_MS) {
+			const date = new Date(t);
+			const frac = (t - start.getTime()) / totalMs;
+			const lat = origin.lat + frac * (destination.lat - origin.lat);
+			const lng = origin.lng + frac * (destination.lng - origin.lng);
+			const pos = SunCalc.getPosition(date, lat, lng);
+			const az = ((pos.azimuth * 180) / Math.PI + 180 + 360) % 360;
+			const alt = (pos.altitude * 180) / Math.PI;
+			const hrs = date.getHours();
+			const m = date.getMinutes().toString().padStart(2, '0');
+			const timeStr = `${hrs % 12 || 12}:${m} ${hrs >= 12 ? 'PM' : 'AM'}`;
+			results.push({ timeStr, lat, lng, az, alt, compass: COMPASS[Math.round(az / 45) % 8] });
+		}
+
+		return results;
+	});
+
 	$effect(() => {
 		if (!mapLoaded) return;
 
@@ -163,6 +190,13 @@
 				type: 'Feature',
 				properties: { direction: (originSun.az + 180) % 360 },
 				geometry: { type: 'Point', coordinates: [origin.lng, origin.lat] }
+			});
+		}
+		for (const step of intermediateSuns) {
+			sunFeatures.push({
+				type: 'Feature',
+				properties: { direction: (step.az + 180) % 360 },
+				geometry: { type: 'Point', coordinates: [step.lng, step.lat] }
 			});
 		}
 		if (destinationSun && destination) {
@@ -203,6 +237,13 @@
 	<p class="text-sm text-surface-400">
 		Sun at departure — azimuth: {originSun.az.toFixed(1)}° {originSun.compass}, altitude: {originSun.alt.toFixed(1)}°
 	</p>
+{/if}
+{#if intermediateSuns.length > 0}
+	<ul class="list-inside list-disc text-sm text-surface-400">
+		{#each intermediateSuns as step}
+			<li>{step.timeStr} ({step.lat.toFixed(3)}°, {step.lng.toFixed(3)}°) — azimuth: {step.az.toFixed(1)}° {step.compass}, altitude: {step.alt.toFixed(1)}°</li>
+		{/each}
+	</ul>
 {/if}
 {#if destinationSun}
 	<p class="text-sm text-surface-400">
