@@ -56,6 +56,18 @@
 			: []
 	);
 
+	const sideRecommendation = $derived.by(() => {
+		const sides = [originSide, ...intermediateSuns.map((s) => s.side), destinationSide].filter(
+			Boolean
+		) as string[];
+		if (sides.length === 0) return null;
+		const left = sides.filter((s) => s === 'Sunlight from left window').length;
+		const right = sides.filter((s) => s === 'Sunlight from right window').length;
+		if (left === 0 && right === 0) return 'nighttime';
+		if (left === right) return 'both';
+		return left > right ? 'left' : 'right';
+	});
+
 	const sunPoints = $derived([
 		...(originSun && originCoords
 			? [{ lat: originCoords.lat, lng: originCoords.lng, az: originSun.az }]
@@ -96,4 +108,14 @@
 		destinationCoords={destinationCoords}
 		{intermediateSuns}
 	/>
+
+	{#if sideRecommendation === 'left'}
+		<h2 class="h2">🌞➡️🚇 Sun coming through left window. Sit on the right side</h2>
+	{:else if sideRecommendation === 'right'}
+		<h2 class="h2">🚇⬅️🌞 Sun coming through right window. Sit on the left side</h2>
+	{:else if sideRecommendation === 'both'}
+		<h2 class="h2">🌞 Sun coming from both sides. Sit on either side</h2>
+	{:else if sideRecommendation === 'nighttime'}
+		<h2 class="h2">🌚 Nighttime. Sit on either side</h2>
+	{/if}
 </div>
