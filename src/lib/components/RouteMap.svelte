@@ -156,6 +156,10 @@
 		const totalMs = end.getTime() - start.getTime();
 		const results: Array<{ timeStr: string; lat: number; lng: number; az: number; alt: number; compass: string }> = [];
 
+		// Divide the total duration into n equal intervals so all gaps are the same size
+		const n = Math.round(totalMs / STEP_MS);
+		if (n < 2) return results;
+
 		// Precompute great-circle values for slerp
 		const toRad = (d: number) => (d * Math.PI) / 180;
 		const toDeg = (r: number) => (r * 180) / Math.PI;
@@ -166,9 +170,9 @@
 			Math.cos(lat1) * Math.cos(lat2) * Math.sin((lng2 - lng1) / 2) ** 2
 		));
 
-		for (let t = start.getTime() + STEP_MS; t < end.getTime(); t += STEP_MS) {
-			const date = new Date(t);
-			const frac = (t - start.getTime()) / totalMs;
+		for (let i = 1; i < n; i++) {
+			const frac = i / n;
+			const date = new Date(start.getTime() + frac * totalMs);
 
 			// Spherical linear interpolation along the great circle
 			let lat: number, lng: number;
