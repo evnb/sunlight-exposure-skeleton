@@ -4,5 +4,5 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
-	ssr: { noExternal: ['@skeletonlabs/skeleton-svelte'] }
+	ssr: { noExternal: ['@skeletonlabs/skeleton-svelte', '@icons-pack/svelte-simple-icons'] }
 });
