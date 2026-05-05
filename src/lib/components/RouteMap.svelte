@@ -23,6 +23,18 @@
 	let originMarker: import('maplibre-gl').Marker | null = null;
 	let destMarker: import('maplibre-gl').Marker | null = null;
 
+	function loadArrowImage(): Promise<HTMLImageElement> {
+		return new Promise((resolve) => {
+			const img = new Image(32, 32);
+			// Arrow pointing up (north) — rotated by icon-rotate at render time
+			const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32">
+				<polygon points="16,2 28,30 16,23 4,30" fill="#fbbf24" stroke="#92400e" stroke-width="1.5" stroke-linejoin="round"/>
+			</svg>`;
+			img.onload = () => resolve(img);
+			img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+		});
+	}
+
 	onMount(async () => {
 		maplibregl = (await import('maplibre-gl')).default;
 
@@ -34,7 +46,9 @@
 			interactive: false
 		});
 
-		map.on('load', () => {
+		map.on('load', async () => {
+			map.addImage('sun-arrow', await loadArrowImage());
+
 			map.addSource('route', {
 				type: 'geojson',
 				data: buildGeoJSON()
@@ -46,6 +60,25 @@
 				layout: { 'line-join': 'round', 'line-cap': 'round' },
 				paint: { 'line-color': '#f59e0b', 'line-width': 3 }
 			});
+
+			map.addSource('sun-arrows', {
+				type: 'geojson',
+				data: { type: 'FeatureCollection', features: [] }
+			});
+			map.addLayer({
+				id: 'sun-arrows-layer',
+				type: 'symbol',
+				source: 'sun-arrows',
+				layout: {
+					'icon-image': 'sun-arrow',
+					'icon-rotate': ['get', 'direction'],
+					'icon-rotation-alignment': 'map',
+					'icon-anchor': 'top',
+					'icon-allow-overlap': true,
+					'icon-size': 1.2
+				}
+			});
+
 			mapLoaded = true;
 		});
 
@@ -122,6 +155,27 @@
 				.setLngLat([destination.lng, destination.lat])
 				.addTo(map);
 		}
+
+		// Sun direction arrows — light travels opposite to the sun's azimuth
+		const sunFeatures: GeoJSON.Feature[] = [];
+		if (originSun && origin) {
+			sunFeatures.push({
+				type: 'Feature',
+				properties: { direction: (originSun.az + 180) % 360 },
+				geometry: { type: 'Point', coordinates: [origin.lng, origin.lat] }
+			});
+		}
+		if (destinationSun && destination) {
+			sunFeatures.push({
+				type: 'Feature',
+				properties: { direction: (destinationSun.az + 180) % 360 },
+				geometry: { type: 'Point', coordinates: [destination.lng, destination.lat] }
+			});
+		}
+		(map.getSource('sun-arrows') as maplibregl.GeoJSONSource)?.setData({
+			type: 'FeatureCollection',
+			features: sunFeatures
+		});
 
 		if (origin && destination) {
 			map.fitBounds(
