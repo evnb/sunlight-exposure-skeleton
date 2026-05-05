@@ -124,6 +124,15 @@
 		azimuth !== null ? COMPASS[Math.round(azimuth / 45) % 8] : null
 	);
 
+	function formatTime(datetime: string | undefined): string | null {
+		if (!datetime) return null;
+		const d = new Date(datetime);
+		if (isNaN(d.getTime())) return null;
+		const hrs = d.getHours();
+		const m = d.getMinutes().toString().padStart(2, '0');
+		return `${hrs % 12 || 12}:${m} ${hrs >= 12 ? 'PM' : 'AM'}`;
+	}
+
 	function sunPosition(coords: Coords, datetime: string | undefined) {
 		if (!coords || !datetime) return null;
 		const date = new Date(datetime);
@@ -258,7 +267,7 @@
 {/if}
 {#if originSun}
 	<p class="text-sm text-surface-400">
-		Sun at departure — azimuth: {originSun.az.toFixed(1)}° {originSun.compass}, altitude: {originSun.alt.toFixed(1)}°
+		Sun at departure ({formatTime(originDatetime)}, {origin?.lat.toFixed(3)}°, {origin?.lng.toFixed(3)}°) — azimuth: {originSun.az.toFixed(1)}° {originSun.compass}, altitude: {originSun.alt.toFixed(1)}°
 	</p>
 {/if}
 {#if intermediateSuns.length > 0}
@@ -270,6 +279,6 @@
 {/if}
 {#if destinationSun}
 	<p class="text-sm text-surface-400">
-		Sun at arrival — azimuth: {destinationSun.az.toFixed(1)}° {destinationSun.compass}, altitude: {destinationSun.alt.toFixed(1)}°
+		Sun at arrival ({formatTime(destinationDatetime)}, {destination?.lat.toFixed(3)}°, {destination?.lng.toFixed(3)}°) — azimuth: {destinationSun.az.toFixed(1)}° {destinationSun.compass}, altitude: {destinationSun.alt.toFixed(1)}°
 	</p>
 {/if}
