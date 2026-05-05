@@ -145,4 +145,4 @@
 	});
 </script>
 
-<div bind:this={mapContainer} class="h-64 w-full overflow-hidden rounded-container-token"></div>
+<div bind:this={mapContainer} class="h-72 w-full overflow-hidden rounded-container-token"></div>

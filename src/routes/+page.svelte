@@ -73,12 +73,12 @@
 		<h4 class="h4">Calculate sun exposure on a trip, and see which side of the bus / train you should sit on to avoid the sun ➡️⁠🚇⁠⬅️</h4>
 	</div>
 
-	<div class="flex flex-col gap-6 md:flex-row md:items-start">
-		<div class="flex flex-col gap-4 md:w-80 md:shrink-0">
+	<div class="flex flex-col gap-6 md:flex-row md:items-center">
+		<div class="flex flex-col gap-4 md:flex-1">
 			<LocationInput label="Origin" bind:value={origin} bind:coords={originCoords} bind:placeName={originPlace} bind:datetime={originDatetime} timeLabel="Departure Time" placeholder="Enter origin city / zip / address" />
 			<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} bind:placeName={destinationPlace} bind:datetime={destinationDatetime} timeLabel="Arrival Time" placeholder="Enter destination city / zip / address" />
 		</div>
-		<div class="min-w-0 flex-1">
+		<div class="min-w-0 flex-1 md:max-w-sm">
 			<RouteMap origin={originCoords} destination={destinationCoords} {sunPoints} />
 		</div>
 	</div>
