@@ -133,6 +133,22 @@
 		return `${hrs % 12 || 12}:${m} ${hrs >= 12 ? 'PM' : 'AM'}`;
 	}
 
+	function bearingTo(fromLat: number, fromLng: number, toLat: number, toLng: number): number {
+		const toRad = (d: number) => (d * Math.PI) / 180;
+		const lat1 = toRad(fromLat), lat2 = toRad(toLat);
+		const dLng = toRad(toLng - fromLng);
+		const y = Math.sin(dLng) * Math.cos(lat2);
+		const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+		return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+	}
+
+	function sunSide(routeAz: number, sunAz: number, sunAlt: number): string {
+		if (sunAlt <= 0) return 'Nighttime';
+		if (sunAlt <= 5) return 'Minimal sun';
+		const diff = (routeAz - sunAz + 360) % 360;
+		return diff < 180 ? 'Sunlight from left window' : 'Sunlight from right window';
+	}
+
 	function sunPosition(coords: Coords, datetime: string | undefined) {
 		if (!coords || !datetime) return null;
 		const date = new Date(datetime);
@@ -146,6 +162,15 @@
 	const originSun = $derived(origin ? sunPosition(origin, originDatetime) : null);
 	const destinationSun = $derived(destination ? sunPosition(destination, destinationDatetime) : null);
 
+	const originSide = $derived(
+		originSun && azimuth !== null ? sunSide(azimuth, originSun.az, originSun.alt) : null
+	);
+	const destinationSide = $derived.by(() => {
+		if (!destinationSun || !origin || !destination) return null;
+		const finalBearing = (bearingTo(destination.lat, destination.lng, origin.lat, origin.lng) + 180) % 360;
+		return sunSide(finalBearing, destinationSun.az, destinationSun.alt);
+	});
+
 	const intermediateSuns = $derived.by(() => {
 		if (!origin || !destination || !originDatetime || !destinationDatetime) return [];
 		const start = new Date(originDatetime);
@@ -154,7 +179,7 @@
 
 		const STEP_MS = 30 * 60 * 1000;
 		const totalMs = end.getTime() - start.getTime();
-		const results: Array<{ timeStr: string; lat: number; lng: number; az: number; alt: number; compass: string }> = [];
+		const results: Array<{ timeStr: string; lat: number; lng: number; az: number; alt: number; compass: string; side: string }> = [];
 
 		// Divide the total duration into n equal intervals so all gaps are the same size
 		const n = Math.round(totalMs / STEP_MS);
@@ -194,7 +219,8 @@
 			const hrs = date.getHours();
 			const m = date.getMinutes().toString().padStart(2, '0');
 			const timeStr = `${hrs % 12 || 12}:${m} ${hrs >= 12 ? 'PM' : 'AM'}`;
-			results.push({ timeStr, lat, lng, az, alt, compass: COMPASS[Math.round(az / 45) % 8] });
+			const localAz = bearingTo(lat, lng, destination.lat, destination.lng);
+			results.push({ timeStr, lat, lng, az, alt, compass: COMPASS[Math.round(az / 45) % 8], side: sunSide(localAz, az, alt) });
 		}
 
 		return results;
@@ -271,18 +297,18 @@
 {/if}
 {#if originSun}
 	<p class="text-sm text-surface-400">
-		Sun at departure ({formatTime(originDatetime)}, {origin?.lat.toFixed(3)}°, {origin?.lng.toFixed(3)}°) — azimuth: {originSun.az.toFixed(1)}° {originSun.compass}, altitude: {originSun.alt.toFixed(1)}°
+		Sun at departure ({formatTime(originDatetime)}, {origin?.lat.toFixed(3)}°, {origin?.lng.toFixed(3)}°) — azimuth: {originSun.az.toFixed(1)}° {originSun.compass}, altitude: {originSun.alt.toFixed(1)}° — {originSide}
 	</p>
 {/if}
 {#if intermediateSuns.length > 0}
 	<ul class="list-inside list-disc text-sm text-surface-400">
 		{#each intermediateSuns as step}
-			<li>{step.timeStr} ({step.lat.toFixed(3)}°, {step.lng.toFixed(3)}°) — azimuth: {step.az.toFixed(1)}° {step.compass}, altitude: {step.alt.toFixed(1)}°</li>
+			<li>{step.timeStr} ({step.lat.toFixed(3)}°, {step.lng.toFixed(3)}°) — azimuth: {step.az.toFixed(1)}° {step.compass}, altitude: {step.alt.toFixed(1)}° — {step.side}</li>
 		{/each}
 	</ul>
 {/if}
 {#if destinationSun}
 	<p class="text-sm text-surface-400">
-		Sun at arrival ({formatTime(destinationDatetime)}, {destination?.lat.toFixed(3)}°, {destination?.lng.toFixed(3)}°) — azimuth: {destinationSun.az.toFixed(1)}° {destinationSun.compass}, altitude: {destinationSun.alt.toFixed(1)}°
+		Sun at arrival ({formatTime(destinationDatetime)}, {destination?.lat.toFixed(3)}°, {destination?.lng.toFixed(3)}°) — azimuth: {destinationSun.az.toFixed(1)}° {destinationSun.compass}, altitude: {destinationSun.alt.toFixed(1)}° — {destinationSide}
 	</p>
 {/if}
