@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LocateFixed, MapPin } from '@lucide/svelte';
+	import { LocateFixed, Search } from '@lucide/svelte';
 
 	interface Coords {
 		lat: number;
@@ -61,10 +61,10 @@
 	<label class="label font-medium">{label}</label>
 	<div class="input-group grid-cols-[1fr_auto_auto]">
 		<input class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} />
-		<button class="ig-btn preset-tonal" title="Geocode location" onclick={geocode}>
-			<MapPin size={16} />
+		<button class="ig-btn preset-filled" title="Geocode location" onclick={geocode}>
+			<Search size={16} />
 		</button>
-		<button class="ig-btn preset-filled" title="Use current location" onclick={useCurrentLocation}>
+		<button class="ig-btn preset-tonal" title="Use current location" onclick={useCurrentLocation}>
 			<LocateFixed size={16} />
 		</button>
 	</div>
