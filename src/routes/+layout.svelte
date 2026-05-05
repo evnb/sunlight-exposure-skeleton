@@ -18,11 +18,13 @@
 	<div class="flex items-center justify-between mb-3">
 		<p class="font-medium">Attributions</p>
 		<div class="flex gap-3">
-			<a class="anchor" href="https://github.com/evnb/sunlight-exposure-skeleton" target="_blank" rel="noopener" title="GitHub"><SiGithub size={18} /></a>
-			<a class="anchor" href="https://bsky.app/profile/evan.click" target="_blank" rel="noopener" title="Bluesky"><SiBluesky size={18} /></a>
+			<p>Made by Evan</p>
+			<a class="anchor" href="https://github.com/evnb/sunlight-exposure-skeleton" target="_blank" rel="noopener" title="GitHub"><SiGithub size={18} title="" /></a>
+			<a class="anchor" href="https://bsky.app/profile/evan.click" target="_blank" rel="noopener" title="Bluesky"><SiBluesky size={18} title="" /></a>
 		</div>
 	</div>
 	<ul class="flex flex-col gap-1">
+		<li>Logo modified from Streamline Emojis by <a class="anchor" href="https://github.com/webalys-hq/streamline-vectors">Streamline</a>. License: <a class="anchor" href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a></li>
 		<li>Geocoding by <a class="anchor" href="https://nominatim.org" target="_blank" rel="noopener">Nominatim</a> · © <a class="anchor" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</li>
 		<li>Map tiles by <a class="anchor" href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a></li>
 		<li>Map rendering by <a class="anchor" href="https://maplibre.org" target="_blank" rel="noopener">MapLibre GL</a></li>

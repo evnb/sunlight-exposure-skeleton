@@ -2,6 +2,7 @@
 	import LocationInput from '$lib/components/LocationInput.svelte';
 	import RouteMap from '$lib/components/RouteMap.svelte';
 	import RouteInfo from '$lib/components/RouteInfo.svelte';
+	import faviconRaw from '$lib/assets/favicon.svg?raw';
 	import {
 		COMPASS,
 		bearingTo,
@@ -10,6 +11,11 @@
 		routeAzimuth,
 		calcIntermediateSuns
 	} from '$lib/sunCalc';
+
+	const faviconSvg = faviconRaw
+		.replace(/<\?xml[^?]*\?>\s*/g, '')
+		.replace(/<!DOCTYPE[^>]*>\s*/g, '')
+		.trim();
 
 	function nowLocal() {
 		const d = new Date();
@@ -81,7 +87,7 @@
 
 <div class="flex flex-col gap-6">
 	<div>
-		<h1 class="h1">Sun Exposure Calculator 🌞</h1>
+		<h1 class="h1">Sun Exposure Calculator 🌞 <span class="inline-block h-[1.4em] w-[1.4em] align-middle">{@html faviconSvg}</span></h1>
 		<h4 class="h4">Calculate sun exposure on a trip, and see which side of the bus / train you should sit on to avoid the sun ➡️⁠🚇⁠⬅️</h4>
 	</div>
 
