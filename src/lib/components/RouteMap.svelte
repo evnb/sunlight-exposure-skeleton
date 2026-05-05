@@ -147,11 +147,34 @@
 		const totalMs = end.getTime() - start.getTime();
 		const results: Array<{ timeStr: string; lat: number; lng: number; az: number; alt: number; compass: string }> = [];
 
+		// Precompute great-circle values for slerp
+		const toRad = (d: number) => (d * Math.PI) / 180;
+		const toDeg = (r: number) => (r * 180) / Math.PI;
+		const lat1 = toRad(origin.lat), lng1 = toRad(origin.lng);
+		const lat2 = toRad(destination.lat), lng2 = toRad(destination.lng);
+		const angDist = 2 * Math.asin(Math.sqrt(
+			Math.sin((lat2 - lat1) / 2) ** 2 +
+			Math.cos(lat1) * Math.cos(lat2) * Math.sin((lng2 - lng1) / 2) ** 2
+		));
+
 		for (let t = start.getTime() + STEP_MS; t < end.getTime(); t += STEP_MS) {
 			const date = new Date(t);
 			const frac = (t - start.getTime()) / totalMs;
-			const lat = origin.lat + frac * (destination.lat - origin.lat);
-			const lng = origin.lng + frac * (destination.lng - origin.lng);
+
+			// Spherical linear interpolation along the great circle
+			let lat: number, lng: number;
+			if (angDist < 1e-10) {
+				lat = origin.lat;
+				lng = origin.lng;
+			} else {
+				const a = Math.sin((1 - frac) * angDist) / Math.sin(angDist);
+				const b = Math.sin(frac * angDist) / Math.sin(angDist);
+				const x = a * Math.cos(lat1) * Math.cos(lng1) + b * Math.cos(lat2) * Math.cos(lng2);
+				const y = a * Math.cos(lat1) * Math.sin(lng1) + b * Math.cos(lat2) * Math.sin(lng2);
+				const z = a * Math.sin(lat1) + b * Math.sin(lat2);
+				lat = toDeg(Math.atan2(z, Math.sqrt(x * x + y * y)));
+				lng = toDeg(Math.atan2(y, x));
+			}
 			const pos = SunCalc.getPosition(date, lat, lng);
 			const az = ((pos.azimuth * 180) / Math.PI + 180 + 360) % 360;
 			const alt = (pos.altitude * 180) / Math.PI;
