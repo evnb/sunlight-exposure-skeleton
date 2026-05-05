@@ -83,7 +83,26 @@
 			? [{ lat: destinationCoords.lat, lng: destinationCoords.lng, az: destinationSun.az }]
 			: [])
 	]);
+
+	const siteUrl = 'https://evnb.github.io/sunlight-exposure-skeleton';
+	const ogImage = `${siteUrl}/og-image.png`;
 </script>
+
+<svelte:head>
+	<title>Sun Exposure Calculator</title>
+	<meta name="description" content="Find out which side of the bus or train to sit on to avoid the sun." />
+	<meta property="og:title" content="Sun Exposure Calculator" />
+	<meta property="og:description" content="Find out which side of the bus or train to sit on to avoid the sun." />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={siteUrl} />
+	<meta property="og:image" content={ogImage} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Sun Exposure Calculator" />
+	<meta name="twitter:description" content="Find out which side of the bus or train to sit on to avoid the sun." />
+	<meta name="twitter:image" content={ogImage} />
+</svelte:head>
 
 <div class="flex flex-col gap-6">
 	<div>
