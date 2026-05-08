@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import LocationInput from '$lib/components/LocationInput.svelte';
 	import RouteMap from '$lib/components/RouteMap.svelte';
 	import RouteInfo from '$lib/components/RouteInfo.svelte';
@@ -86,6 +87,44 @@
 
 	const siteUrl = 'https://evnb.github.io/sunlight-exposure-skeleton';
 	const ogImage = `${siteUrl}/og-image.png`;
+
+	async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
+		const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+		const data = await res.json();
+		return data.address?.city ?? data.address?.town ?? data.address?.village ?? data.address?.county ?? null;
+	}
+
+	onMount(() => {
+		const p = new URLSearchParams(window.location.search);
+		const olat = p.get('olat'), olng = p.get('olng');
+		if (olat && olng) {
+			const lat = parseFloat(olat), lng = parseFloat(olng);
+			originCoords = { lat, lng };
+			origin = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+			reverseGeocode(lat, lng).then(name => { originPlace = name; });
+		}
+		const dlat = p.get('dlat'), dlng = p.get('dlng');
+		if (dlat && dlng) {
+			const lat = parseFloat(dlat), lng = parseFloat(dlng);
+			destinationCoords = { lat, lng };
+			destination = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+			reverseGeocode(lat, lng).then(name => { destinationPlace = name; });
+		}
+	});
+
+	$effect(() => {
+		const p = new URLSearchParams();
+		if (originCoords) {
+			p.set('olat', originCoords.lat.toFixed(6));
+			p.set('olng', originCoords.lng.toFixed(6));
+		}
+		if (destinationCoords) {
+			p.set('dlat', destinationCoords.lat.toFixed(6));
+			p.set('dlng', destinationCoords.lng.toFixed(6));
+		}
+		const qs = p.toString();
+		history.replaceState({}, '', qs ? `?${qs}` : window.location.pathname);
+	});
 
 	let recommendationEl = $state<HTMLElement | null>(null);
 	let prevRecommendation: string | null = null;
