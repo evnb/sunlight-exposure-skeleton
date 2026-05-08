@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LocateFixed, Search } from '@lucide/svelte';
+	import { LocateFixed, LoaderCircle, Search } from '@lucide/svelte';
 
 	interface Coords {
 		lat: number;
@@ -40,20 +40,27 @@
 		}
 	}
 
-	async function useCurrentLocation() {
-		navigator.geolocation.getCurrentPosition(async (pos) => {
-			const lat = pos.coords.latitude;
-			const lng = pos.coords.longitude;
-			coords = { lat, lng };
-			value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+	let locating = $state(false);
 
-			const res = await fetch(
-				`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
-			);
-			const data = await res.json();
-			placeName =
-				data.address?.city ?? data.address?.town ?? data.address?.village ?? data.address?.county ?? null;
-		});
+	async function useCurrentLocation() {
+		locating = true;
+		navigator.geolocation.getCurrentPosition(
+			async (pos) => {
+				const lat = pos.coords.latitude;
+				const lng = pos.coords.longitude;
+				coords = { lat, lng };
+				value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+
+				const res = await fetch(
+					`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+				);
+				const data = await res.json();
+				placeName =
+					data.address?.city ?? data.address?.town ?? data.address?.village ?? data.address?.county ?? null;
+				locating = false;
+			},
+			() => { locating = false; }
+		);
 	}
 </script>
 
@@ -61,11 +68,15 @@
 	<label class="label font-medium">{label}</label>
 	<div class="input-group grid-cols-[1fr_auto_auto]">
 		<input class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} />
-		<button class="ig-btn preset-filled" title="Geocode location" onclick={geocode}>
+		<button class="ig-btn preset-filled" title="Search location" aria-label="Search location" onclick={geocode}>
 			<Search size={16} />
 		</button>
-		<button class="ig-btn preset-tonal" title="Use current location" onclick={useCurrentLocation}>
-			<LocateFixed size={16} />
+		<button class="ig-btn preset-tonal" title={locating ? 'Loading current location' : 'Use current location'} aria-label={locating ? 'Loading current location' : 'Use current location'} onclick={useCurrentLocation} disabled={locating}>
+			{#if locating}
+				<LoaderCircle size={16} class="animate-spin" />
+			{:else}
+				<LocateFixed size={16} />
+			{/if}
 		</button>
 	</div>
 	{#if coords}
