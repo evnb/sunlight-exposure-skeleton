@@ -86,6 +86,16 @@
 
 	const siteUrl = 'https://evnb.github.io/sunlight-exposure-skeleton';
 	const ogImage = `${siteUrl}/og-image.png`;
+
+	let recommendationEl = $state<HTMLElement | null>(null);
+	let prevRecommendation: string | null = null;
+
+	$effect(() => {
+		if (sideRecommendation !== null && prevRecommendation === null && recommendationEl) {
+			recommendationEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+		}
+		prevRecommendation = sideRecommendation;
+	});
 </script>
 
 <svelte:head>
@@ -134,13 +144,17 @@
 		{intermediateSuns}
 	/>
 
-	{#if sideRecommendation === 'left'}
-		<h2 class="h2">🌞➡️🚇 Sun coming through left window. Sit on the right side</h2>
-	{:else if sideRecommendation === 'right'}
-		<h2 class="h2">🚇⬅️🌞 Sun coming through right window. Sit on the left side</h2>
-	{:else if sideRecommendation === 'both'}
-		<h2 class="h2">🌞 Sun coming from both sides. Sit on either side</h2>
-	{:else if sideRecommendation === 'nighttime'}
-		<h2 class="h2">🌚 Nighttime. Sit on either side</h2>
+	{#if sideRecommendation !== null}
+		<div bind:this={recommendationEl}>
+			{#if sideRecommendation === 'left'}
+				<h2 class="h2">🌞➡️🚇 Sun coming through left window. Sit on the right side</h2>
+			{:else if sideRecommendation === 'right'}
+				<h2 class="h2">🚇⬅️🌞 Sun coming through right window. Sit on the left side</h2>
+			{:else if sideRecommendation === 'both'}
+				<h2 class="h2">🌞 Sun coming from both sides. Sit on either side</h2>
+			{:else if sideRecommendation === 'nighttime'}
+				<h2 class="h2">🌚 Nighttime. Sit on either side</h2>
+			{/if}
+		</div>
 	{/if}
 </div>
