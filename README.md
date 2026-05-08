@@ -1,42 +1,36 @@
-# sv
+<img src="https://raw.githubusercontent.com/evnb/sunlight-exposure-skeleton/refs/heads/main/src/lib/assets/favicon.svg" width="200">
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+# Sun Exposure Calculator
 
-## Creating a project
+Calculate sun exposure on a transit trip and find out which side of the bus or train to sit on to avoid the sun.
 
-If you're seeing this, you've probably already done this step. Congrats!
+**Live demo:** https://evnb.github.io/sunlight-exposure-skeleton
+
+## Features
+
+- Enter an origin and destination to get a side-of-vehicle recommendation (left, right, either, or nighttime)
+- Preview map showing the route and sun direction at each point along the trip
+- Shareable URLs — origin and destination coordinates are saved to the URL automatically
+
+## How it works
+
+The user enters origin and destination, as well as departure and arrival times for the trip. Sun azimuth is calculated using [SunCalc](https://github.com/mourner/suncalc) at the origin, destination, and sometimes intermediate points along the route. (Intermediate points are equidistant based on slerp.) The sun azimuth is compared against the route bearing at each point to determine which side of the vehicle the sun will be coming from. The side that appears most often across the route wins.
+
+Geocoding and reverse geocoding are provided by [Nominatim](https://nominatim.org/) (OpenStreetMap data). Maps are rendered with [MapLibre GL](https://maplibre.org/).
+
+## Stack
+
+- [Svelte 5](https://svelte.dev/) + [SvelteKit 2](https://kit.svelte.dev/) (static adapter)
+- [Tailwind CSS 4](https://tailwindcss.com/)
+- [Skeleton Labs v4](https://www.skeleton.dev/) — sahara dark theme
+- [Lucide Svelte](https://lucide.dev/) for icons
+
+## Development
 
 ```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-npx sv@0.15.2 create --template minimal --types ts --no-install sunlight-exposure-skeleton
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+npm install
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+npm run build    # production build
+npm run preview  # preview production build
+npm run check    # type-check
 ```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
