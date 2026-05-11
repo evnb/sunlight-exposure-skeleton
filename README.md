@@ -34,3 +34,38 @@ npm run build    # production build
 npm run preview  # preview production build
 npm run check    # type-check
 ```
+
+## Found Resources
+
+Resources I discovered along the way while working on this project
+
+### Sun Calculation
+
+- [SunCalc](https://github.com/mourner/suncalc) Library by  [Volodymyr Agafonkin](https://agafonkin.com/)
+- CosineKitty's [Astronomy](https://github.com/cosinekitty/astronomy) Engine, a library by [Don Cross](http://cosinekitty.com/)
+- [suncalc.org](https://www.suncalc.org/) tool by [Torsten Hoffmann](https://www.torsten-hoffmann.de/)
+- [suncalc.net](https://suncalc.net/) tool by [Volodymyr Agafonkin](https://agafonkin.com/)
+
+### Geocoding
+
+- [Nominatim](https://nominatim.org/), an Free* and Open Source geocoding service by [Sarah Hoffmann](https://lonvia.de/)
+- [Photon](https://photon.komoot.io/), a Free* geocoding service by [Komoot](https://www.komoot.com/)
+- [Pelias](https://github.com/pelias/pelias), an Open Source hostable geocoder 
+- [List of Free Geocoding Services](https://wiki.openstreetmap.org/wiki/Geocoding#Non-commercial,_ToS_limited) on the Open Street Map Wiki
+
+### Map Rendering
+
+- [Leaflet](https://leafletjs.com/), an open source JS library for interactive maps
+- [Open Free Map](https://openfreemap.org/)
+- [MapLibre](https://maplibre.org/), a collection of Open Source mapping libraries
+  - [Awesome MapLibre](https://github.com/maplibre/awesome-maplibre)
+
+### Icons
+
+- [Iconify.Design](https://iconify.design/), viewer for Open Source icon sets (including emojis)
+- [Streamline emojis](https://icon-sets.iconify.design/streamline-emojis/), cute stylized (nonexhausetive) emoji set CC BY 4.0
+- [Lucide](https://lucide.dev/), free beautiful and consistent icons
+
+### Resource Lists
+
+- [Awesome](http://awesome.re/) Lists, resource lists about many topics
