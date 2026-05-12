@@ -13,6 +13,7 @@
 		calcIntermediateSuns
 	} from '$lib/sunCalc';
 	import { CircleQuestionMark } from '@lucide/svelte';
+	import { Popover, Portal } from '@skeletonlabs/skeleton-svelte';
 
 	const faviconSvg = faviconRaw
 		.replace(/<\?xml[^?]*\?>\s*/g, '')
@@ -196,12 +197,21 @@
 				<h2 class="h2">🌚 Nighttime. Sit on either side</h2>
 			{/if}
 			{#if sideRecommendation === 'left' || sideRecommendation === 'right'}
-				<button popovertarget="side-info" class="btn-icon preset-tonal shrink-0" aria-label="More info">
-					<CircleQuestionMark size={20} />
-				</button>
-				<div id="side-info" popover class="card p-4 text-sm max-w-xs">
-					Left and right are from the perspective of a passenger seated facing the direction of travel.
-				</div>
+				<Popover>
+					<Popover.Trigger class="btn-icon preset-tonal shrink-0" aria-label="More info">
+						<CircleQuestionMark size={20} />
+					</Popover.Trigger>
+					<Portal>
+						<Popover.Positioner>
+							<Popover.Content class="card p-4 text-sm max-w-xs bg-surface-100-900 shadow-xl">
+								Left and right are from the perspective of a passenger seated facing the direction of travel.
+								<Popover.Arrow class="[--arrow-size:--spacing(2)] [--arrow-background:var(--color-surface-100-900)]">
+									<Popover.ArrowTip />
+								</Popover.Arrow>
+							</Popover.Content>
+						</Popover.Positioner>
+					</Portal>
+				</Popover>
 			{/if}
 		</div>
 	{/if}
