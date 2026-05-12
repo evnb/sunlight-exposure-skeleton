@@ -12,6 +12,7 @@
 		routeAzimuth,
 		calcIntermediateSuns
 	} from '$lib/sunCalc';
+	import { CircleQuestionMark } from '@lucide/svelte';
 
 	const faviconSvg = faviconRaw
 		.replace(/<\?xml[^?]*\?>\s*/g, '')
@@ -184,7 +185,7 @@
 	/>
 
 	{#if sideRecommendation !== null}
-		<div bind:this={recommendationEl}>
+		<div bind:this={recommendationEl} class="flex items-center gap-3">
 			{#if sideRecommendation === 'left'}
 				<h2 class="h2">🌞➡️🚇 Sun coming through left window. Sit on the right side</h2>
 			{:else if sideRecommendation === 'right'}
@@ -193,6 +194,14 @@
 				<h2 class="h2">🌞 Sun coming from both sides. Sit on either side</h2>
 			{:else if sideRecommendation === 'nighttime'}
 				<h2 class="h2">🌚 Nighttime. Sit on either side</h2>
+			{/if}
+			{#if sideRecommendation === 'left' || sideRecommendation === 'right'}
+				<button popovertarget="side-info" class="btn-icon preset-tonal shrink-0" aria-label="More info">
+					<CircleQuestionMark size={20} />
+				</button>
+				<div id="side-info" popover class="card p-4 text-sm max-w-xs">
+					Left and right are from the perspective of a passenger seated facing the direction of travel.
+				</div>
 			{/if}
 		</div>
 	{/if}
