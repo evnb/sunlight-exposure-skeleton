@@ -185,35 +185,36 @@
 		{intermediateSuns}
 	/>
 
+	{#snippet infoPopover()}
+		<Popover>
+			<Popover.Trigger class="btn-icon preset-tonal inline-flex align-middle ml-1" aria-label="More info">
+				<CircleQuestionMark size={20} />
+			</Popover.Trigger>
+			<Portal>
+				<Popover.Positioner class="z-20!">
+					<Popover.Content class="card p-4 text-sm max-w-xs bg-surface-100-900 shadow-xl">
+						<Popover.Description>
+							For forward-facing seats, sit on the {#if sideRecommendation === 'left'}right{:else}left{/if} side. For aisle-facing seats, sit on the {#if sideRecommendation === 'left'}left{:else}right{/if} side.
+						</Popover.Description>
+						<Popover.Arrow class="[--arrow-size:--spacing(2)] [--arrow-background:var(--color-surface-100-900)]">
+							<Popover.ArrowTip />
+						</Popover.Arrow>
+					</Popover.Content>
+				</Popover.Positioner>
+			</Portal>
+		</Popover>
+	{/snippet}
+
 	{#if sideRecommendation !== null}
-		<div bind:this={recommendationEl} class="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-3">
+		<div bind:this={recommendationEl}>
 			{#if sideRecommendation === 'left'}
-				<h2 class="h2">🌞➡️🚇 Sun coming through left window. Sit on the right side for standard seating</h2>
+				<h2 class="h2">🌞➡️🚇 Sun coming through left window. Sit on the right side for standard seating {@render infoPopover()}</h2>
 			{:else if sideRecommendation === 'right'}
-				<h2 class="h2">🚇⬅️🌞 Sun coming through right window. Sit on the left side for standard seating</h2>
+				<h2 class="h2">🚇⬅️🌞 Sun coming through right window. Sit on the left side for standard seating {@render infoPopover()}</h2>
 			{:else if sideRecommendation === 'both'}
 				<h2 class="h2">🌞 Sun coming from both sides. Sit on either side</h2>
 			{:else if sideRecommendation === 'nighttime'}
 				<h2 class="h2">🌚 Nighttime. Sit on either side</h2>
-			{/if}
-			{#if sideRecommendation === 'left' || sideRecommendation === 'right'}
-				<Popover>
-					<Popover.Trigger class="btn-icon preset-tonal shrink-0" aria-label="More info">
-						<CircleQuestionMark size={20} />
-					</Popover.Trigger>
-					<Portal>
-						<Popover.Positioner class="z-20!">
-							<Popover.Content class="card p-4 text-sm max-w-xs bg-surface-100-900 shadow-xl">
-								<Popover.Description>
-									For forward-facing seats, sit on the {#if sideRecommendation === 'left'} right {:else if sideRecommendation === 'right'} left {/if} side. For aisle-facing seats, sit on the {#if sideRecommendation === 'left'} left {:else if sideRecommendation === 'right'} right {/if} side.
-								</Popover.Description>
-								<Popover.Arrow class="[--arrow-size:--spacing(2)] [--arrow-background:var(--color-surface-100-900)]">
-									<Popover.ArrowTip />
-								</Popover.Arrow>
-							</Popover.Content>
-						</Popover.Positioner>
-					</Portal>
-				</Popover>
 			{/if}
 		</div>
 	{/if}
