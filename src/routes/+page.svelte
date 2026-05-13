@@ -188,9 +188,9 @@
 	{#if sideRecommendation !== null}
 		<div bind:this={recommendationEl} class="flex items-center gap-3">
 			{#if sideRecommendation === 'left'}
-				<h2 class="h2">🌞➡️🚇 Sun coming through left window. Sit on the right side</h2>
+				<h2 class="h2">🌞➡️🚇 Sun coming through left window. Sit on the right side for standard seating</h2>
 			{:else if sideRecommendation === 'right'}
-				<h2 class="h2">🚇⬅️🌞 Sun coming through right window. Sit on the left side</h2>
+				<h2 class="h2">🚇⬅️🌞 Sun coming through right window. Sit on the left side for standard seating</h2>
 			{:else if sideRecommendation === 'both'}
 				<h2 class="h2">🌞 Sun coming from both sides. Sit on either side</h2>
 			{:else if sideRecommendation === 'nighttime'}
@@ -202,9 +202,9 @@
 						<CircleQuestionMark size={20} />
 					</Popover.Trigger>
 					<Portal>
-						<Popover.Positioner>
+						<Popover.Positioner class="z-20!">
 							<Popover.Content class="card p-4 text-sm max-w-xs bg-surface-100-900 shadow-xl">
-								Left and right are from the perspective of a passenger seated facing the direction of travel.
+								For forward-facing seats, sit on the {#if sideRecommendation === 'left'} right {:else if sideRecommendation === 'right'} left {/if} side. For aisle-facing seats, sit on the {#if sideRecommendation === 'left'} left {:else if sideRecommendation === 'right'} right {/if} side.
 								<Popover.Arrow class="[--arrow-size:--spacing(2)] [--arrow-background:var(--color-surface-100-900)]">
 									<Popover.ArrowTip />
 								</Popover.Arrow>
