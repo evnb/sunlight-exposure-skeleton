@@ -186,7 +186,7 @@
 	/>
 
 	{#if sideRecommendation !== null}
-		<div bind:this={recommendationEl} class="flex items-center gap-3">
+		<div bind:this={recommendationEl} class="flex flex-col items-start gap-2 md:flex-row md:items-center md:gap-3">
 			{#if sideRecommendation === 'left'}
 				<h2 class="h2">🌞➡️🚇 Sun coming through left window. Sit on the right side for standard seating</h2>
 			{:else if sideRecommendation === 'right'}
@@ -204,7 +204,9 @@
 					<Portal>
 						<Popover.Positioner class="z-20!">
 							<Popover.Content class="card p-4 text-sm max-w-xs bg-surface-100-900 shadow-xl">
-								For forward-facing seats, sit on the {#if sideRecommendation === 'left'} right {:else if sideRecommendation === 'right'} left {/if} side. For aisle-facing seats, sit on the {#if sideRecommendation === 'left'} left {:else if sideRecommendation === 'right'} right {/if} side.
+								<Popover.Description>
+									For forward-facing seats, sit on the {#if sideRecommendation === 'left'} right {:else if sideRecommendation === 'right'} left {/if} side. For aisle-facing seats, sit on the {#if sideRecommendation === 'left'} left {:else if sideRecommendation === 'right'} right {/if} side.
+								</Popover.Description>
 								<Popover.Arrow class="[--arrow-size:--spacing(2)] [--arrow-background:var(--color-surface-100-900)]">
 									<Popover.ArrowTip />
 								</Popover.Arrow>
