@@ -184,23 +184,25 @@
 		<div class="flex flex-col gap-4 md:flex-1">
 			<LocationInput label="Origin" bind:value={origin} bind:coords={originCoords} bind:placeName={originPlace} bind:datetime={originDatetime} timeLabel="Departure Time" placeholder="Enter origin city / zip / address" />
 			<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} bind:placeName={destinationPlace} bind:datetime={destinationDatetime} timeLabel="Arrival Time" placeholder="Enter destination city / zip / address" />
-			{#if canShare}
-				<button type="button" class="btn preset-outlined" onclick={shareRoute}>
-					{#if isAndroid}
-						<Share2 size={18} />
-					{:else}
-						<Share size={18} />
-					{/if}
-					<span>Share Route</span>
-				</button>
-			{:else}
-				{#snippet linkIcon()}
-					<Link class="size-5" />
-				{/snippet}
-				<button type="button" class="btn preset-outlined" onclick={() => copyLink(linkIcon)}>
-					<Link size={18} />
-					<span>Copy Link to Route</span>
-				</button>
+			{#if originCoords && destinationCoords}
+				{#if canShare}
+					<button type="button" class="btn preset-outlined" onclick={shareRoute}>
+						{#if isAndroid}
+							<Share2 size={18} />
+						{:else}
+							<Share size={18} />
+						{/if}
+						<span>Share Route</span>
+					</button>
+				{:else}
+					{#snippet linkIcon()}
+						<Link class="size-5" />
+					{/snippet}
+					<button type="button" class="btn preset-outlined" onclick={() => copyLink(linkIcon)}>
+						<Link size={18} />
+						<span>Copy Link to Route</span>
+					</button>
+				{/if}
 			{/if}
 		</div>
 		<div class="min-w-0 flex-1 md:max-w-sm">
