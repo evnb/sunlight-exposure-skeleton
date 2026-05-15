@@ -19,7 +19,7 @@ There are no tests configured.
 - **Svelte 5** (Runes syntax — use `$state`, `$derived`, `$effect`, not stores)
 - **SvelteKit 2** with static adapter (SSG, no server-side routes)
 - **Tailwind CSS 4** via `@tailwindcss/vite`
-- **Skeleton Labs v4** (`@skeletonlabs/skeleton` + `@skeletonlabs/skeleton-svelte`) — sahara dark theme
+- **Skeleton Labs v4** (`@skeletonlabs/skeleton` + `@skeletonlabs/skeleton-svelte` + `@skeletonlabs/skeleton-common`) — sahara dark theme
 - **Lucide Svelte** for icons
 
 ## Architecture
@@ -28,7 +28,7 @@ File-based routing under `src/routes/`. SvelteKit's `$lib` alias points to `src/
 
 `src/app.html` sets `data-theme="sahara"` and `class="dark"` on `<html>` — the Skeleton theme is applied at the document root.
 
-`src/routes/+layout.css` loads Tailwind, Skeleton base styles, and the sahara theme CSS in order — this import order matters.
+`src/routes/+layout.css` loads Tailwind, Skeleton base styles, Skeleton component styles (`@skeletonlabs/skeleton-common`), and the sahara theme CSS in order — this import order matters.
 
 The static adapter means all pages must be pre-renderable. Avoid SvelteKit server features (`+server.ts`, `load` with `fetch` to private APIs, form actions with side effects) unless you switch adapters.
 
