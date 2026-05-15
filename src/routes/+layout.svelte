@@ -35,7 +35,7 @@
 	<div class="flex items-center justify-between mb-3">
 		<p class="font-medium">Attributions</p>
 		<div class="flex gap-3">
-			<p>Made by Evan</p>
+			<p>Made by <a class="anchor" href="https://evan.click" target="_blank" rel="noopener">Evan</a></p>
 			<a class="anchor" href="https://github.com/evnb/sunlight-exposure-skeleton" target="_blank" rel="noopener" title="GitHub"><SiGithub size={18} title="" /></a>
 			<a class="anchor" href="https://bsky.app/profile/evan.click" target="_blank" rel="noopener" title="Bluesky"><SiBluesky size={18} title="" /></a>
 		</div>
