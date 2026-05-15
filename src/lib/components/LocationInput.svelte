@@ -27,12 +27,22 @@
 	const inputId = $derived(label.toLowerCase().replace(/\s+/g, '-') + '-location');
 	const datetimeId = $derived(label.toLowerCase().replace(/\s+/g, '-') + '-datetime');
 
+	let lastGeocodedValue = $state('');
+	const searchDisabled = $derived(!value.trim() || value.trim() === lastGeocodedValue);
+
+	$effect(() => {
+		if (coords && !lastGeocodedValue) {
+			lastGeocodedValue = value.trim();
+		}
+	});
+
 	async function geocode() {
 		if (!value.trim()) return;
 		const result = await geocodeQuery(value);
 		if (result) {
 			coords = result.coords;
 			placeName = result.placeName;
+			lastGeocodedValue = value.trim();
 		}
 		onsearch?.();
 	}
@@ -47,6 +57,7 @@
 				const lng = pos.coords.longitude;
 				coords = { lat, lng };
 				value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+				lastGeocodedValue = value;
 				placeName = await reverseGeocode(lat, lng);
 				locating = false;
 			},
@@ -59,7 +70,7 @@
 	<label for={inputId} class="label font-medium">{label}</label>
 	<div class="input-group grid-cols-[1fr_auto_auto]">
 		<input id={inputId} class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} />
-		<button class="ig-btn preset-filled" title="Search location" aria-label="Search location" onclick={geocode}>
+		<button class="ig-btn preset-filled" title="Search location" aria-label="Search location" onclick={geocode} disabled={searchDisabled}>
 			<Search size={16} />
 		</button>
 		<button class="ig-btn preset-tonal" title={locating ? 'Loading current location' : 'Use current location'} aria-label={locating ? 'Loading current location' : 'Use current location'} onclick={useCurrentLocation} disabled={locating}>
