@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { afterNavigate, replaceState } from '$app/navigation';
 	import LocationInput from '$lib/components/LocationInput.svelte';
 	import RouteMap from '$lib/components/RouteMap.svelte';
 	import RouteInfo from '$lib/components/RouteInfo.svelte';
@@ -96,6 +97,9 @@
 		return data.address?.city ?? data.address?.town ?? data.address?.village ?? data.address?.county ?? null;
 	}
 
+	let routerReady = $state(false);
+	afterNavigate(() => { routerReady = true; });
+
 	onMount(() => {
 		const p = new URLSearchParams(window.location.search);
 		const olat = p.get('olat'), olng = p.get('olng');
@@ -115,6 +119,7 @@
 	});
 
 	$effect(() => {
+		if (!routerReady) return;
 		const p = new URLSearchParams();
 		if (originCoords) {
 			p.set('olat', originCoords.lat.toFixed(6));
@@ -125,7 +130,7 @@
 			p.set('dlng', destinationCoords.lng.toFixed(6));
 		}
 		const qs = p.toString();
-		history.replaceState({}, '', qs ? `?${qs}` : window.location.pathname);
+		replaceState(qs ? `?${qs}` : window.location.pathname, {});
 	});
 
 	let recommendationEl = $state<HTMLElement | null>(null);

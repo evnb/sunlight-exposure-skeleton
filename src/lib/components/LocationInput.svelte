@@ -26,6 +26,9 @@
 		placeholder = 'Enter a location...'
 	}: Props = $props();
 
+	const inputId = $derived(label.toLowerCase().replace(/\s+/g, '-') + '-location');
+	const datetimeId = $derived(label.toLowerCase().replace(/\s+/g, '-') + '-datetime');
+
 	async function geocode() {
 		if (!value.trim()) return;
 		const res = await fetch(
@@ -65,9 +68,9 @@
 </script>
 
 <div class="flex flex-col gap-1">
-	<label class="label font-medium">{label}</label>
+	<label for={inputId} class="label font-medium">{label}</label>
 	<div class="input-group grid-cols-[1fr_auto_auto]">
-		<input class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} />
+		<input id={inputId} class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} />
 		<button class="ig-btn preset-filled" title="Search location" aria-label="Search location" onclick={geocode}>
 			<Search size={16} />
 		</button>
@@ -85,8 +88,8 @@
 			{#if placeName}&nbsp;·&nbsp;{placeName}{/if}
 		</p>
 	{/if}
-	<label class="label font-medium">{timeLabel}</label>
-	<input class="input" type="datetime-local" bind:value={datetime} />
+	<label for={datetimeId} class="label font-medium">{timeLabel}</label>
+	<input id={datetimeId} class="input" type="datetime-local" bind:value={datetime} />
 </div>
 
 <!--
