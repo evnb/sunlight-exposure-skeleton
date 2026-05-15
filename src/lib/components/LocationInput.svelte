@@ -44,6 +44,13 @@
 	}
 
 	let locating = $state(false);
+	let locateBtn = $state<HTMLButtonElement | null>(null);
+
+	function handleBlur(e: FocusEvent) {
+		if (!coords && value.trim() && e.relatedTarget !== locateBtn) {
+			geocode();
+		}
+	}
 
 	async function useCurrentLocation() {
 		locating = true;
@@ -70,11 +77,11 @@
 <div class="flex flex-col gap-1">
 	<label for={inputId} class="label font-medium">{label}</label>
 	<div class="input-group grid-cols-[1fr_auto_auto]">
-		<input id={inputId} class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} />
+		<input id={inputId} class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} onblur={handleBlur} />
 		<button class="ig-btn preset-filled" title="Search location" aria-label="Search location" onclick={geocode}>
 			<Search size={16} />
 		</button>
-		<button class="ig-btn preset-tonal" title={locating ? 'Loading current location' : 'Use current location'} aria-label={locating ? 'Loading current location' : 'Use current location'} onclick={useCurrentLocation} disabled={locating}>
+		<button bind:this={locateBtn} class="ig-btn preset-tonal" title={locating ? 'Loading current location' : 'Use current location'} aria-label={locating ? 'Loading current location' : 'Use current location'} onclick={useCurrentLocation} disabled={locating}>
 			{#if locating}
 				<LoaderCircle size={16} class="animate-spin" />
 			{:else}
