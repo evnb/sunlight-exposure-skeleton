@@ -2,6 +2,8 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import './+layout.css';
 	import { SiGithub, SiBluesky } from '@icons-pack/svelte-simple-icons';
+	import { Toast } from '@skeletonlabs/skeleton-svelte';
+	import { toaster } from '$lib/toaster';
 
 	let { children } = $props();
 </script>
@@ -9,6 +11,26 @@
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
+
+<Toast.Group {toaster}>
+	{#snippet children(toast)}
+		<Toast {toast} class="card p-4 shadow-xl flex items-center gap-4 min-w-64 {
+			toast.type === 'success' ? 'preset-filled-success-500' :
+			toast.type === 'error'   ? 'preset-filled-error-500' :
+			toast.type === 'warning' ? 'preset-filled-warning-500' :
+			'preset-filled-primary-500'
+		}">
+			{#if toast.meta?.icon}
+				{@render toast.meta.icon()}
+			{/if}
+			<Toast.Message>
+				<Toast.Title class="font-semibold">{toast.title}</Toast.Title>
+				<Toast.Description class="text-sm opacity-75">{toast.description}</Toast.Description>
+			</Toast.Message>
+			<Toast.CloseTrigger class="btn-icon btn-icon-sm" />
+		</Toast>
+	{/snippet}
+</Toast.Group>
 
 <main class="mx-auto max-w-4xl px-4 py-8">
 	{@render children()}

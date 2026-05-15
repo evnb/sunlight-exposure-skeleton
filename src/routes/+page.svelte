@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { afterNavigate, replaceState } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import LocationInput from '$lib/components/LocationInput.svelte';
 	import RouteMap from '$lib/components/RouteMap.svelte';
 	import RouteInfo from '$lib/components/RouteInfo.svelte';
@@ -13,7 +14,8 @@
 		routeAzimuth,
 		calcIntermediateSuns
 	} from '$lib/sunCalc';
-	import { CircleQuestionMark } from '@lucide/svelte';
+	import { CircleQuestionMark, Link, Share, Share2 } from '@lucide/svelte';
+	import { toaster } from '$lib/toaster';
 	import { Popover, Portal } from '@skeletonlabs/skeleton-svelte';
 
 	const faviconSvg = faviconRaw
@@ -87,6 +89,18 @@
 			? [{ lat: destinationCoords.lat, lng: destinationCoords.lng, az: destinationSun.az }]
 			: [])
 	]);
+
+	const isAndroid = browser && /android/i.test(navigator.userAgent);
+	const canShare = browser && !!navigator.share;
+
+	async function shareRoute() {
+		await navigator.share({ title: document.title, url: window.location.href });
+	}
+
+	async function copyLink(icon: Snippet) {
+		await navigator.clipboard.writeText(window.location.href);
+		toaster.success({ title: 'Link copied!', description: 'Paste it anywhere to share this route.', meta: { icon } });
+	}
 
 	const siteUrl = 'https://evnb.github.io/sunlight-exposure-skeleton';
 	const ogImage = `${siteUrl}/og-image.png`;
@@ -170,6 +184,24 @@
 		<div class="flex flex-col gap-4 md:flex-1">
 			<LocationInput label="Origin" bind:value={origin} bind:coords={originCoords} bind:placeName={originPlace} bind:datetime={originDatetime} timeLabel="Departure Time" placeholder="Enter origin city / zip / address" />
 			<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} bind:placeName={destinationPlace} bind:datetime={destinationDatetime} timeLabel="Arrival Time" placeholder="Enter destination city / zip / address" />
+			{#if canShare}
+				<button type="button" class="btn preset-outlined" onclick={shareRoute}>
+					{#if isAndroid}
+						<Share2 size={18} />
+					{:else}
+						<Share size={18} />
+					{/if}
+					<span>Share Route</span>
+				</button>
+			{:else}
+				{#snippet linkIcon()}
+					<Link class="size-5" />
+				{/snippet}
+				<button type="button" class="btn preset-outlined" onclick={() => copyLink(linkIcon)}>
+					<Link size={18} />
+					<span>Copy Link to Route</span>
+				</button>
+			{/if}
 		</div>
 		<div class="min-w-0 flex-1 md:max-w-sm">
 			<RouteMap origin={originCoords} destination={destinationCoords} {sunPoints} />
