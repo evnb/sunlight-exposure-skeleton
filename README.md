@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/evnb/sunlight-exposure-skeleton/refs/heads/main/src/lib/assets/favicon.svg" width="200">
 
-# Sun Exposure Calculator
+# SunnySide - Sun Exposure Calculator
 
 Calculate sun exposure on a transit trip and find out which side of the bus or train to sit on to avoid the sun.
 

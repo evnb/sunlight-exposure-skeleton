@@ -145,9 +145,9 @@
 </script>
 
 <svelte:head>
-	<title>Sun Exposure Calculator</title>
+	<title>SunnySide - Sun Exposure Calculator</title>
 	<meta name="description" content="Find out which side of the bus or train to sit on to avoid the sun." />
-	<meta property="og:title" content="Sun Exposure Calculator" />
+	<meta property="og:title" content="SunnySide - Sun Exposure Calculator" />
 	<meta property="og:description" content="Find out which side of the bus or train to sit on to avoid the sun." />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content={siteUrl} />
@@ -155,14 +155,14 @@
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Sun Exposure Calculator" />
+	<meta name="twitter:title" content="SunnySide - Sun Exposure Calculator" />
 	<meta name="twitter:description" content="Find out which side of the bus or train to sit on to avoid the sun." />
 	<meta name="twitter:image" content={ogImage} />
 </svelte:head>
 
 <div class="flex flex-col gap-6">
 	<div>
-		<h1 class="h1">Sun Exposure Calculator 🌞 <span class="inline-block h-[1.4em] w-[1.4em] align-middle">{@html faviconSvg}</span></h1>
+		<h1 class="h1">SunnySide - Sun Exposure Calculator 🌞 <span class="inline-block h-[1.4em] w-[1.4em] align-middle">{@html faviconSvg}</span></h1>
 		<h4 class="h4">Calculate sun exposure on a trip, and see which side of the bus / train you should sit on to avoid the sun ➡️⁠🚇⁠⬅️</h4>
 	</div>
 
