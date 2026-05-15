@@ -14,20 +14,15 @@
 
 <Toast.Group {toaster}>
 	{#snippet children(toast)}
-		<Toast {toast} class="card p-4 shadow-xl flex items-center gap-4 min-w-64 {
-			toast.type === 'success' ? 'preset-filled-success-500' :
-			toast.type === 'error'   ? 'preset-filled-error-500' :
-			toast.type === 'warning' ? 'preset-filled-warning-500' :
-			'preset-filled-primary-500'
-		}">
+		<Toast {toast}>
 			{#if toast.meta?.icon}
 				{@render toast.meta.icon()}
 			{/if}
 			<Toast.Message>
-				<Toast.Title class="font-semibold">{toast.title}</Toast.Title>
-				<Toast.Description class="text-sm opacity-75">{toast.description}</Toast.Description>
+				<Toast.Title>{toast.title}</Toast.Title>
+				<Toast.Description>{toast.description}</Toast.Description>
 			</Toast.Message>
-			<Toast.CloseTrigger class="btn-icon btn-icon-sm" />
+			<Toast.CloseTrigger />
 		</Toast>
 	{/snippet}
 </Toast.Group>

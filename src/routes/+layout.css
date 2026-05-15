@@ -2,4 +2,5 @@
 @import 'maplibre-gl/dist/maplibre-gl.css';
 @plugin '@tailwindcss/forms';
 @import '@skeletonlabs/skeleton';
+@import '@skeletonlabs/skeleton-common';
 @import '../../node_modules/@skeletonlabs/skeleton/src/themes/sahara.css';
