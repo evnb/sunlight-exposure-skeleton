@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { afterNavigate, replaceState } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { geocode, reverseGeocode } from '$lib/geocode';
 	import LocationInput from '$lib/components/LocationInput.svelte';
 	import RouteMap from '$lib/components/RouteMap.svelte';
 	import RouteInfo from '$lib/components/RouteInfo.svelte';
@@ -105,10 +106,21 @@
 	const siteUrl = 'https://evnb.github.io/sunlight-exposure-skeleton';
 	const ogImage = `${siteUrl}/og-image.png`;
 
-	async function reverseGeocode(lat: number, lng: number): Promise<string | null> {
-		const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
-		const data = await res.json();
-		return data.address?.city ?? data.address?.town ?? data.address?.village ?? data.address?.county ?? null;
+	async function geocodeIfNeeded(value: string, coords: { lat: number; lng: number } | null, setCoords: (c: { lat: number; lng: number }) => void, setPlace: (p: string | null) => void) {
+		if (coords || !value.trim()) return;
+		const result = await geocode(value);
+		if (result) {
+			setCoords(result.coords);
+			setPlace(result.placeName);
+		}
+	}
+
+	function handleOriginSearch() {
+		geocodeIfNeeded(destination, destinationCoords, (c) => destinationCoords = c, (p) => destinationPlace = p);
+	}
+
+	function handleDestinationSearch() {
+		geocodeIfNeeded(origin, originCoords, (c) => originCoords = c, (p) => originPlace = p);
 	}
 
 	let routerReady = $state(false);
@@ -182,8 +194,8 @@
 
 	<div class="flex flex-col gap-6 md:flex-row md:items-center">
 		<div class="flex flex-col gap-4 md:flex-1">
-			<LocationInput label="Origin" bind:value={origin} bind:coords={originCoords} bind:placeName={originPlace} bind:datetime={originDatetime} timeLabel="Departure Time" placeholder="Enter origin city / zip / address" />
-			<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} bind:placeName={destinationPlace} bind:datetime={destinationDatetime} timeLabel="Arrival Time" placeholder="Enter destination city / zip / address" />
+			<LocationInput label="Origin" bind:value={origin} bind:coords={originCoords} bind:placeName={originPlace} bind:datetime={originDatetime} timeLabel="Departure Time" placeholder="Enter origin city / zip / address" onsearch={handleOriginSearch} />
+			<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} bind:placeName={destinationPlace} bind:datetime={destinationDatetime} timeLabel="Arrival Time" placeholder="Enter destination city / zip / address" onsearch={handleDestinationSearch} />
 			{#if originCoords && destinationCoords}
 				{#if canShare}
 					<button type="button" class="btn preset-outlined" onclick={shareRoute}>

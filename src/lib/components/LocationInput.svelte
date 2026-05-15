@@ -1,10 +1,6 @@
 <script lang="ts">
 	import { LocateFixed, LoaderCircle, Search } from '@lucide/svelte';
-
-	interface Coords {
-		lat: number;
-		lng: number;
-	}
+	import { geocode as geocodeQuery, reverseGeocode, type Coords } from '$lib/geocode';
 
 	interface Props {
 		label: string;
@@ -14,6 +10,7 @@
 		datetime?: string;
 		timeLabel?: string;
 		placeholder?: string;
+		onsearch?: () => void;
 	}
 
 	let {
@@ -23,7 +20,8 @@
 		placeName = $bindable(null),
 		datetime = $bindable(''),
 		timeLabel = 'Time',
-		placeholder = 'Enter a location...'
+		placeholder = 'Enter a location...',
+		onsearch
 	}: Props = $props();
 
 	const inputId = $derived(label.toLowerCase().replace(/\s+/g, '-') + '-location');
@@ -31,26 +29,15 @@
 
 	async function geocode() {
 		if (!value.trim()) return;
-		const res = await fetch(
-			`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&limit=1&addressdetails=1`
-		);
-		const data = await res.json();
-		if (data.length > 0) {
-			const r = data[0];
-			coords = { lat: parseFloat(r.lat), lng: parseFloat(r.lon) };
-			placeName =
-				r.address.city ?? r.address.town ?? r.address.village ?? r.address.county ?? null;
+		const result = await geocodeQuery(value);
+		if (result) {
+			coords = result.coords;
+			placeName = result.placeName;
 		}
+		onsearch?.();
 	}
 
 	let locating = $state(false);
-	let locateBtn = $state<HTMLButtonElement | null>(null);
-
-	function handleBlur(e: FocusEvent) {
-		if (!coords && value.trim() && e.relatedTarget !== locateBtn) {
-			geocode();
-		}
-	}
 
 	async function useCurrentLocation() {
 		locating = true;
@@ -60,13 +47,7 @@
 				const lng = pos.coords.longitude;
 				coords = { lat, lng };
 				value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-
-				const res = await fetch(
-					`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
-				);
-				const data = await res.json();
-				placeName =
-					data.address?.city ?? data.address?.town ?? data.address?.village ?? data.address?.county ?? null;
+				placeName = await reverseGeocode(lat, lng);
 				locating = false;
 			},
 			() => { locating = false; }
@@ -77,11 +58,11 @@
 <div class="flex flex-col gap-1">
 	<label for={inputId} class="label font-medium">{label}</label>
 	<div class="input-group grid-cols-[1fr_auto_auto]">
-		<input id={inputId} class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} onblur={handleBlur} />
+		<input id={inputId} class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} />
 		<button class="ig-btn preset-filled" title="Search location" aria-label="Search location" onclick={geocode}>
 			<Search size={16} />
 		</button>
-		<button bind:this={locateBtn} class="ig-btn preset-tonal" title={locating ? 'Loading current location' : 'Use current location'} aria-label={locating ? 'Loading current location' : 'Use current location'} onclick={useCurrentLocation} disabled={locating}>
+		<button class="ig-btn preset-tonal" title={locating ? 'Loading current location' : 'Use current location'} aria-label={locating ? 'Loading current location' : 'Use current location'} onclick={useCurrentLocation} disabled={locating}>
 			{#if locating}
 				<LoaderCircle size={16} class="animate-spin" />
 			{:else}
