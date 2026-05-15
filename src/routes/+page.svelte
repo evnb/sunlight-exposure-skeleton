@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { afterNavigate, replaceState } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { geocode, reverseGeocode } from '$lib/geocode';
@@ -126,14 +126,17 @@
 	let routerReady = $state(false);
 	afterNavigate(() => { routerReady = true; });
 
-	onMount(() => {
+	onMount(async () => {
 		const p = new URLSearchParams(window.location.search);
+		let loadedFromUrl = false;
+
 		const olat = p.get('olat'), olng = p.get('olng');
 		if (olat && olng) {
 			const lat = parseFloat(olat), lng = parseFloat(olng);
 			originCoords = { lat, lng };
 			origin = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 			reverseGeocode(lat, lng).then(name => { originPlace = name; });
+			loadedFromUrl = true;
 		}
 		const dlat = p.get('dlat'), dlng = p.get('dlng');
 		if (dlat && dlng) {
@@ -141,6 +144,12 @@
 			destinationCoords = { lat, lng };
 			destination = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 			reverseGeocode(lat, lng).then(name => { destinationPlace = name; });
+			loadedFromUrl = true;
+		}
+
+		if (loadedFromUrl) {
+			await tick();
+			recommendationEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 		}
 	});
 
