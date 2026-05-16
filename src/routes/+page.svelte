@@ -112,6 +112,8 @@
 		if (result) {
 			setCoords(result.coords);
 			setPlace(result.placeName);
+		} else {
+			toaster.error({ title: 'Location not found', description: `Could not find "${value.trim()}". Try a different location.` });
 		}
 	}
 
