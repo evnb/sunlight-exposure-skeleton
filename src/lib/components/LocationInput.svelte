@@ -36,8 +36,11 @@
 		}
 	});
 
+	let geocoding = $state(false);
+
 	async function geocode() {
 		if (!value.trim()) return;
+		geocoding = true;
 		const result = await geocodeQuery(value);
 		if (result) {
 			coords = result.coords;
@@ -45,6 +48,7 @@
 			lastGeocodedValue = value.trim();
 		}
 		onsearch?.();
+		geocoding = false;
 	}
 
 	let locating = $state(false);
@@ -70,8 +74,12 @@
 	<label for={inputId} class="label font-medium">{label}</label>
 	<div class="input-group grid-cols-[1fr_auto_auto]">
 		<input id={inputId} class="ig-input" type="text" bind:value {placeholder} onkeydown={(e) => e.key === 'Enter' && geocode()} />
-		<button class="ig-btn preset-filled" title="Search location" aria-label="Search location" onclick={geocode} disabled={searchDisabled}>
-			<Search size={16} />
+		<button class="ig-btn preset-filled" title="Search location" aria-label="Search location" onclick={geocode} disabled={searchDisabled || geocoding}>
+			{#if geocoding}
+				<LoaderCircle size={16} class="animate-spin" />
+			{:else}
+				<Search size={16} />
+			{/if}
 		</button>
 		<button class="ig-btn preset-tonal" title={locating ? 'Loading current location' : 'Use current location'} aria-label={locating ? 'Loading current location' : 'Use current location'} onclick={useCurrentLocation} disabled={locating}>
 			{#if locating}
