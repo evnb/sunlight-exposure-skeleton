@@ -33,10 +33,12 @@
 	let origin = $state('');
 	let originCoords = $state<{ lat: number; lng: number } | null>(null);
 	let originPlace = $state<string | null>(null);
+	let originFailedValue = $state('');
 	let originDatetime = $state(nowLocal());
 	let destination = $state('');
 	let destinationCoords = $state<{ lat: number; lng: number } | null>(null);
 	let destinationPlace = $state<string | null>(null);
+	let destinationFailedValue = $state('');
 	let destinationDatetime = $state(nowLocal());
 
 	const azimuth = $derived(
@@ -106,23 +108,24 @@
 	const siteUrl = 'https://evnb.github.io/sunlight-exposure-skeleton';
 	const ogImage = `${siteUrl}/og-image.png`;
 
-	async function geocodeIfNeeded(value: string, coords: { lat: number; lng: number } | null, setCoords: (c: { lat: number; lng: number }) => void, setPlace: (p: string | null) => void) {
+	async function geocodeIfNeeded(value: string, coords: { lat: number; lng: number } | null, setCoords: (c: { lat: number; lng: number }) => void, setPlace: (p: string | null) => void, setFailedValue: (v: string) => void) {
 		if (coords || !value.trim()) return;
 		const result = await geocode(value);
 		if (result) {
 			setCoords(result.coords);
 			setPlace(result.placeName);
 		} else {
+			setFailedValue(value.trim());
 			toaster.error({ title: 'Location not found', description: `Could not find "${value.trim()}". Try a different location.` });
 		}
 	}
 
 	function handleOriginSearch() {
-		geocodeIfNeeded(destination, destinationCoords, (c) => destinationCoords = c, (p) => destinationPlace = p);
+		geocodeIfNeeded(destination, destinationCoords, (c) => destinationCoords = c, (p) => destinationPlace = p, (v) => destinationFailedValue = v);
 	}
 
 	function handleDestinationSearch() {
-		geocodeIfNeeded(origin, originCoords, (c) => originCoords = c, (p) => originPlace = p);
+		geocodeIfNeeded(origin, originCoords, (c) => originCoords = c, (p) => originPlace = p, (v) => originFailedValue = v);
 	}
 
 	let routerReady = $state(false);
@@ -205,8 +208,8 @@
 
 	<div class="flex flex-col gap-6 md:flex-row md:items-center">
 		<div class="flex flex-col gap-4 md:flex-1">
-			<LocationInput label="Origin" bind:value={origin} bind:coords={originCoords} bind:placeName={originPlace} bind:datetime={originDatetime} timeLabel="Departure Time" placeholder="Enter origin city / address" onsearch={handleOriginSearch} />
-			<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} bind:placeName={destinationPlace} bind:datetime={destinationDatetime} timeLabel="Arrival Time" placeholder="Enter destination city / address" onsearch={handleDestinationSearch} />
+			<LocationInput label="Origin" bind:value={origin} bind:coords={originCoords} bind:placeName={originPlace} bind:lastFailedValue={originFailedValue} bind:datetime={originDatetime} timeLabel="Departure Time" placeholder="Enter origin city / address" onsearch={handleOriginSearch} />
+			<LocationInput label="Destination" bind:value={destination} bind:coords={destinationCoords} bind:placeName={destinationPlace} bind:lastFailedValue={destinationFailedValue} bind:datetime={destinationDatetime} timeLabel="Arrival Time" placeholder="Enter destination city / address" onsearch={handleDestinationSearch} />
 			{#if originCoords && destinationCoords}
 				{#if canShare}
 					<button type="button" class="btn preset-outlined" onclick={shareRoute}>

@@ -8,6 +8,7 @@
 		value: string;
 		coords?: Coords | null;
 		placeName?: string | null;
+		lastFailedValue?: string;
 		datetime?: string;
 		timeLabel?: string;
 		placeholder?: string;
@@ -19,6 +20,7 @@
 		value = $bindable(),
 		coords = $bindable(null),
 		placeName = $bindable(null),
+		lastFailedValue = $bindable(''),
 		datetime = $bindable(''),
 		timeLabel = 'Time',
 		placeholder = 'Enter a location...',
@@ -29,7 +31,6 @@
 	const datetimeId = $derived(label.toLowerCase().replace(/\s+/g, '-') + '-datetime');
 
 	let lastSuccessValue = $state('');
-	let lastFailedValue = $state('');
 	const isFailedValue = $derived(!!lastFailedValue && value.trim() === lastFailedValue);
 	const searchDisabled = $derived(
 		!value.trim() || value.trim() === lastSuccessValue || isFailedValue
