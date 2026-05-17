@@ -10,6 +10,7 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<script src="https://evn--019e31ba288d76c1908ca3407ea67044.web.val.run/analytics.js"></script>
 </svelte:head>
 
 <Toast.Group {toaster}>
